@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="libraries/css/bootstrap.min.css">
+    <script src="libraries/jquery-3.6.0.min.js"></script>
+    <title>Admin Login</title>
+</head>
+<body>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Signika+Negative:wght@500&display=swap');
+        *{
+            font-family: 'Signika Negative', sans-serif;
+        }
+        form{
+            width: 40%;
+            height: fit-content;
+            border: 1px solid #cececed6;
+            border-radius: 4px;
+            background: #fff;
+            box-shadow: 0 0 5px #cececed6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10%;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            overflow: hidden;
+        }
+        form h4{
+            width: 100%;
+            color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        form .form-control{
+            margin-bottom: 15px;
+            width: 95%;
+        }
+        form button{
+            margin-left: 85%;
+            margin-bottom: 15px;
+        }
+        #error{
+            width: 100%;
+            color: red;
+        }
+        @media only screen and (max-width: 750px){
+                form{
+                    width: 90%;
+                    margin-top: 20%;
+                }
+                form button{
+                    margin-left: 75%;
+                }
+            }
+    </style>
+    <div class="main">
+        <form action="login.php" method="post" class="form-group">
+            <h4 class="text-center bg-success">Admin Login</h4>
+            <div id="error" class="text-center"></div>
+            <input type="email" class='form-control' name="email" id="email" placeholder="Enter email...">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Enter password...">
+            <button class="btn btn-success" type="submit" name="submit" id="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#submit').on('click', function(e){
+                if($('#email').val() == '' || IsEmail($('#email').val())== false){
+                    $('#error').text('Valid Email required');
+                    e.preventDefault();
+                }
+                else if($('#password').val() == ''){
+                    $('#error').text('Password required');
+                    e.preventDefault();
+                }
+                else if($('#password').val().length < 8){
+                    $('#error').text('Password must be atleast 8 characters');
+                    e.preventDefault();
+                }
+            })
+
+            function IsEmail(email) {
+                var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if(!regex.test(email)) {
+                return false;
+                }else{
+                return true;
+                }
+            }
+        })
+    </script>
+</body>
+</html>
