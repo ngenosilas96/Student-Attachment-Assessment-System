@@ -63,9 +63,29 @@
                     <th>Time</th>
                     <th>Link Used</th>
                     <th>Note</th>
+                    <th>Action</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+                <?php
+                $user_id = $_SESSION['admin-id'];
+                $sql = "SELECT * FROM meetings WHERE user_id = $user_id";
+                $run = mysqli_query($connection, $sql);
+                $rows = mysqli_num_rows($run);
+                if($rows > 0){
+                    while($fetch = mysqli_fetch_assoc($run)){
+                        ?>
+                        <tr>
+                        <td><?php echo $fetch['date']?></td>
+                        <td><?php echo $fetch['time']?></td>
+                        <td><?php echo $fetch['link']?></td>
+                        <td><?php echo $fetch['note']?></td>
+                        <td><button value="<?php echo $fetch['id']?>" class="btn btn-sm btn-danger delete">Delete</button></td>
+                        </tr>
+                        <?php
+                    }
+                }?>
+            </tbody>
         </table>
     </div>
     <!-- The Modal -->
@@ -75,7 +95,7 @@
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>New Meeting</h2>
-        <form action="#" method="post">
+        <form action="server/meetings.php" method="post">
             <div class="form-group mb-2">
                 <label for="date">Date:</label>
                 <input type="date" class="form-control" id="date" name="date" required>
@@ -90,10 +110,10 @@
             </div>
             <div class="form-group mb-2">
                 <label for="note">Note:</label>
-                <textarea name="note" class="form-control" id="note" cols="30" rows="3" style="resize: none;" required></textarea>
+                <textarea name="note" class="form-control" id="note" cols="30" rows="3" style="resize: none;"></textarea>
             </div>
             <div class="form-group mb-2">
-                <button class="btn btn-info">Save & Share</button>
+                <button class="btn btn-info" type="submit" name="save">Save & Share</button>
             </div>
         </form>
     </div>
@@ -117,6 +137,29 @@
             modal.style.display = 'none';
         }
     }
+
+    $(document).ready(function(){
+        $('.delete').on('click', function(){
+            var meeting_id = $(this).val();
+            if(confirm('Are you sure?')){
+                $.ajax({
+                    type: "post",
+                    url: "server/delete-meeting.php",
+                    data: {meeting_id: meeting_id},
+                    dataType: "text",
+                    success: function (response) {
+                        console.log(response);
+                        if(response == '1'){
+                            location.reload();
+                        }
+                        else if(response == '0'){
+                            alert('Something went wrong!');
+                        }
+                    }
+                });
+            }
+        })
+    })
     </script>
 </body>
 </html>

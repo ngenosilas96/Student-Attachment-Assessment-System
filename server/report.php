@@ -2,11 +2,16 @@
 session_start();
 include 'connection.php';
 
-if(isset($_POST['submit']) && isset($_SESSION['id']) && $_FILES['picture']['error'] != UPLOAD_ERR_NO_FILE){
+if(isset($_POST['submit']) && isset($_POST['placeOfWork']) && isset($_POST['remarks']) && isset($_POST['timein']) && isset($_POST['date']) && isset($_SESSION['id']) && $_FILES['picture']['error'] != UPLOAD_ERR_NO_FILE){
     $date = $_POST['date'];
     $timein = $_POST['timein'];
-    $placeofwork = $_POST['placeOfWork'];
+    $placeofwork2 = $_POST['placeOfWork'];
+    $placeofwork = '';
     $remarks = $_POST['remarks'];
+
+    if($placeofwork2 == 'other'){
+        $placeofwork = $_POST['manual_placeofwork'];
+    }
     // $timeout = $_POST['timeout'];
     $employee_id = $_SESSION['id'];
     // date_default_timezone_set('Africa/Nairobi'); echo date('H:i:s');
@@ -58,14 +63,18 @@ if(isset($_POST['submit']) && isset($_SESSION['id']) && $_FILES['picture']['erro
         }
     }
 }
-else if(isset($_POST['submit']) && isset($_SESSION['id']) && $_FILES['picture']['error'] == UPLOAD_ERR_NO_FILE){
+else if(isset($_POST['submit']) && isset($_POST['placeOfWork']) && isset($_POST['remarks']) && isset($_POST['timein']) && isset($_POST['date']) && isset($_SESSION['id']) && $_FILES['picture']['error'] == UPLOAD_ERR_NO_FILE){
     $date = $_POST['date'];
     $timein = $_POST['timein'];
-    $placeofwork = $_POST['placeOfWork'];
+    $placeofwork2 = $_POST['placeOfWork'];
+    $placeofwork = '';
     $remarks = $_POST['remarks'];
     // $timeout = $_POST['timeout'];
     $employee_id = $_SESSION['id'];
     $file = $_FILES["file"];
+    if($placeofwork2 == 'other'){
+        $placeofwork = $_POST['manual_placeofwork'];
+    }
 
     if($file["size"] > 0){
 

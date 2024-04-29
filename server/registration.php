@@ -34,7 +34,7 @@ if(isset($_POST["signup"])){
 
     if($rows > 0){
         echo '<script>
-        alert("That email is already registered!");
+        alert("That email is already registered, use different email or look for assistance rom the admin!");
         window.location.assign("../signup.php")
         </script>';
 

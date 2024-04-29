@@ -1,6 +1,7 @@
 <div class="brand"><a href="/TimeSheet/">Intern Hub</a></div>
 <div id="options" class="">
         <a href="reports.php" class="mx-4">Reports</a>
+        <a href="meetings.php" class="mx-4">Meetings</a>
         <a href="leave.php" class="mx-4">Request Leave</a>
         <a href="messages.php" class="mx-4" id="messages"><i class="fa-regular fa-message"></i><span></span>&nbsp;Messages</a>
         <a href="profile.php" class="mx-4"><i class="fa-solid fa-circle-user"></i> <?php echo $_SESSION['username'];?></a>

@@ -13,7 +13,7 @@ if (isset($_POST['from']) && isset($_POST['to'])) {
     $to = new DateTime($to);
 
     // Use a prepared statement to avoid SQL injection
-    $sql = "SELECT * FROM report WHERE employee_id = ? ORDER BY date";
+    $sql = "SELECT * FROM report WHERE employee_id = ? AND (approve = '1' OR approve IS NULL) AND (date < time_uploaded OR date = time_uploaded) ORDER BY date";
     $stmt = mysqli_prepare($connection, $sql);
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);

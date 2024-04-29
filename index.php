@@ -223,6 +223,15 @@ if(isset($_SESSION['username']) && (time() - $_SESSION['login-time']) <= 36000){
             }
         }
 
+        .indicator{
+            position: absolute;
+            right: 10px;
+            width: 60px !important;
+            top: 0px;
+            padding: 2px 5px;
+            font-size: 12px
+        }
+
     </style>
 </head>
 <?php
@@ -236,11 +245,21 @@ function employee_tasks(){
         if($rows > 0){
             while($details = mysqli_fetch_assoc($run)){?>
 
-            <div id="row">
+            <div id="row" style="position: relative;">
+                <?php
+                if($details['approve'] == '0'){?>
+                    <p class="rounded-pill text-center text-light bg-danger indicator">Declined</p>
+                <?php
+                }
+                else if($details['approve'] == '1'){?>
+                    <p class="rounded-pill text-center text-light bg-success indicator">Approved</p>
+                <?php
+                }
+                ?>
                 <div id="name"><p><button class="btn btn-sm mb-1"><i class="fa-solid fa-plus"></i><i class="fa-solid fa-minus"></i></button><?php echo $details['date']?></p></div>
                 <div class="working" id="working-hours"><p>From: <?php echo $details['time_in']?></p></div>
                 <div class="working" id="working-hours"><p>To: <?php echo $details['timeout']?></p></div>
-                <div id="placeofwork"><p><?php echo $details['place_of_work']?></p></div>
+                <div id="placeofwork" style="margin-right: 70px;"><p><?php echo $details['place_of_work']?></p></div><br>
                 <div id="remarks"><?php echo $details['remarks']?>
                     <?php
                     if($details['picture'] != null){
@@ -263,12 +282,13 @@ function employee_tasks(){
                     <p><button class="btn btn-sm btn-danger delete-task" value="<?php echo $details['report_id']?>">Delete Task</button></p>
                 </div>
             </div>
-            <?php }
+            <?php
+            }
         }
         else{?>
             <div id="row">No task...</div>
       <?php }
-}
+      }
 ?>
 <body>
     <div id="outer">

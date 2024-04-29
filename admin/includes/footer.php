@@ -1,1 +1,1 @@
-<div class="footer">&copy; <?php echo date('Y').' All Rights Reserved';?></div>
+<div class="footer">&copy; <?php echo date('Y') . ' Silas'; ?></div>

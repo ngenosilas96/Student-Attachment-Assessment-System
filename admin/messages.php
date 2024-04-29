@@ -194,7 +194,8 @@
             $('#message-reply').show();
             var parent_id = $(this).val();
             var employee_id = $(this).find('input').val();
-            $('#message-reply #send').on('click', function(){
+            $('#message-reply #send').off('click').on('click', function(e){
+                e.preventDefault();
                 var message = $('#message-reply #message').val();
                 if(message != ''){
                     $.ajax({

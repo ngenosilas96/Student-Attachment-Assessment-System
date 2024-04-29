@@ -135,10 +135,12 @@
                 <label for="timeIn">Time In:</label>
                 <input type="time" name="timein" class="form-control" id="timeIn">
                 <label for="placeofwork">Place of Work:</label>
-                <select name="placeOfWork" id="placeOfWork" class="form-control">
+                <select name="placeOfWork" id="placeOfWork" class="form-control" onchange="showInput()">
                     <option value="0">--place of work--</option>
                     <?php branch_selection();?>
+                    <option value="other">Other</option>
                 </select>
+                <input type="text" class="form-control" name="manual_placeofwork" placeholder="Place of work..." id="manualInput" style="display: none">
                 <label for="remarks">Remarks:</label>
                 <textarea id="remarks" name="remarks" class="remarks form-control" rows="13"></textarea>
                 <label for="picture" class="mt-2">Picture (optional)</label>
@@ -212,22 +214,49 @@
         //disabling timout button
         $('form #timeOut').prop('disabled', true);
 
-        // Add javascript below
+        function showInput() {
+            var select = document.getElementById("placeOfWork");
+            var input = document.getElementById("manualInput");
+            var selectedValue = select.value;
+            //var options = select.options;
+
+
+
+            // Check if the selected value matches any option
+            //var optionExists = Array.from(options).some(option => option.value === selectedValue);
+
+            if (selectedValue == 'other') {
+                input.style.display = "block";
+            } else {
+                input.style.display = "none";
+            }
+        }
 
 
         $('#entry-button').click(function(){
-            const date = $('#date').val();
-            const place = $('#placeOfWork').val();
-            const timein = $('#timeIn').val();
-            const remarks = tinyMCE.activeEditor.getContent({format : 'text'});
-
-            var add = ("<tr><td>"+date+"</td><td>"+timein+"</td><td>"+place+"</td><td>"+remarks+"</td><td><i class='fa-solid fa-trash'></i></td></tr>");
+            var date = $('#date').val();
+            var place = $('#placeOfWork').val();
+            var manual_place = $("#manualInput").val();
+            var timein = $('#timeIn').val();
+            var add = '';
+            if(place == 'other'){
+                var remarks = tinyMCE.activeEditor.getContent({format : 'text'});
+                var add = ("<tr><td>"+date+"</td><td>"+timein+"</td><td>"+manual_place+"</td><td>"+remarks+"</td><td><i class='fa-solid fa-trash'></i></td></tr>");
+            }
+            else{
+                var remarks = tinyMCE.activeEditor.getContent({format : 'text'});
+                var add = ("<tr><td>"+date+"</td><td>"+timein+"</td><td>"+place+"</td><td>"+remarks+"</td><td><i class='fa-solid fa-trash'></i></td></tr>");
+            }
             $('#timeSheet tbody').append(add);
 
             //deleting a row
             $('tbody .fa-trash').on('click', function(){
                 $(this).parent().parent().remove();
             })
+            $(this).attr('disabled', true);
+        })
+        $('#date, #placeOfWork, #timeIn, #manualInput').on('change', function(){
+            $('#entry-button').attr('disabled', false);
         })
 
         //report validation

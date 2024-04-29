@@ -49,6 +49,11 @@
                 <select name="department" id="department" class="form-control w-100 my-2">
                     <?php departments_for_reg()?>
                 </select>
+                <select name="level" id="level" class="form-control w-100 my-2">
+                    <option value="">Admin Level</option>
+                    <option value="2">Standard Admin</option>
+                    <option value="1">Super Admin</option>
+                </select>
                 <input type="password" class="form-control w-100 my-2" name="password" id="password" placeholder="Enter Password...">
                 <button type="submit" class="btn btn-primary form-control" name="add">Add</button>
             </form>
@@ -92,6 +97,11 @@
                     e.preventDefault();
                     alert('Password must be atleast 8 characters');
                     $('#password').css('border', '1px solid red');
+                }
+                else if($('#level').children('option:selected').val() == ''){
+                    e.preventDefault();
+                    alert('Select Admin Level');
+                    $('#level').css('border', '1px solid red');
                 }
             })
             function IsEmail(email) {

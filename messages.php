@@ -187,19 +187,26 @@
 
     $messageQuery = "SELECT * FROM message WHERE employee_id = $id AND parent_message_id IS NULL ORDER BY date";
     $messageResult = mysqli_query($connection, $messageQuery);
+    $number_of_messages = mysqli_num_rows($messageResult);
 
     $employee = "SELECT * FROM employee WHERE employee_id = $id";
     $employeeResult = mysqli_query($connection, $employee);
     $employeeDetails = mysqli_fetch_assoc($employeeResult);
 
-    while ($messageDetails = mysqli_fetch_assoc($messageResult)) {
-        $parentMessageId = $messageDetails['id'];
-
-        // Display the original message
-        displayMessage($messageDetails, 'You');
-
-        // Display reply messages
-        displayReplyMessages($connection, $parentMessageId, $id);
+    if($number_of_messages > 0){
+        while ($messageDetails = mysqli_fetch_assoc($messageResult)) {
+            $parentMessageId = $messageDetails['id'];
+    
+            // Display the original message
+            displayMessage($messageDetails, 'You');
+    
+            // Display reply messages
+            displayReplyMessages($connection, $parentMessageId, $id);
+        }
+    }
+    else{?>
+        <h6>No messages</h6>
+        <?php
     }
     ?>
 

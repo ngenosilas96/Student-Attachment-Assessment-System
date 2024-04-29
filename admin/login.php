@@ -25,6 +25,7 @@ if(isset($_POST['submit'])){
         $_SESSION['admin-username'] = $details['username'];
         $_SESSION['admin-id'] = $details['id'];
         $_SESSION['department'] = $details['department'];
+        $_SESSION['admin_type'] = $details['level'];
         $_SESSION['admin-login-time'] = time();
         echo '<script>window.location.assign("../admin")</script>';
     }

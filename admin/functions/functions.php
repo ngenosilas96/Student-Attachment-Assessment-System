@@ -272,7 +272,7 @@ function all_employees(){
         if($rows > 0){
             while($details = mysqli_fetch_assoc($run)){
                 $employee_id = $details['employee_id'];
-                $sql2 = "SELECT * FROM report WHERE employee_id = $employee_id";
+                $sql2 = "SELECT * FROM report WHERE employee_id = $employee_id AND approve IS NULL OR approve = 1";
                 $run2 = mysqli_query($connection, $sql2);
                 $number = mysqli_num_rows($run2);
 
@@ -436,11 +436,25 @@ function tasks_for_admin(){
                 $rows2 = mysqli_num_rows($run2);
             ?>
             <div id="row">
+                <?php
+                if(date('Y-m-d', strtotime($details['date'])) < date('Y-m-d', strtotime($details['time_uploaded']))){?>
+                    <p class="rounded-pill text-center text-light bg-danger indicator">Late</p>
+                <?php
+                }
+                else if(date('Y-m-d', strtotime($details['time_uploaded'])) < date('Y-m-d', strtotime($details['date']))){?>
+                    <p class="rounded-pill text-center text-light bg-primary indicator">Earlier</p>
+                    <?php
+                }
+                else if(date('Y-m-d', strtotime($details['time_uploaded'])) == date('Y-m-d', strtotime($details['date']))){?>
+                    <p class="rounded-pill text-center text-light bg-success indicator">On Time</p>
+                <?php
+                }
+                ?>
                 <div id="name"><p><button class="btn btn-sm mb-1"><i class="fa-solid fa-plus"></i><i class="fa-solid fa-minus"></i></button><?php echo $details['fname'].' '. $details['lname']?></p></div>
                 <div id="working-hours"><p>From: <?php echo $details['time_in']?></p></div>
                 <div id="working-hours"><p>To: <?php echo $details['timeout']?></p></div>
                 <div id="working-hours"><p>Last Login: <?php $dateTime = new DateTime($details['last_login']); $timeOnly = $dateTime->format('H:i:s'); echo $timeOnly?></p></div>
-                <div id="working-hours"><p><?php echo $details['place_of_work']?></p></div>
+                <div id="working-hours" style="margin-right: 70px;"><p><?php echo $details['place_of_work']?></p></div><br>
                 <div id="remarks"><?php echo $details['remarks']?>
                     <?php
                     if($details['picture'] != null){
@@ -462,6 +476,24 @@ function tasks_for_admin(){
                             <p>No file attached</p>
                         <?php endif; ?>
                     </p>
+                    <?php
+                    if(date('Y-m-d', strtotime($details['date'])) < date('Y-m-d', strtotime($details['time_uploaded']))){
+                        if($details['approve'] == null){?>
+                            <p class="text-primary">Waiting Approval</p>
+                            <p><button class="btn btn-sm btn-success approve-task" value="<?php echo $details['report_id']?>">Approve</button></p>
+                            <p><button class="btn btn-sm btn-warning decline-task" value="<?php echo $details['report_id']?>">Decline</button></p>
+                            <?php
+                        }else if($details['approve'] == '1'){?>
+                            <p class="text-success">Approved</p>
+                            <p><button class="btn btn-sm btn-danger decline-task" value="<?php echo $details['report_id']?>">Decline</button></p>
+                            <?php
+                        }else if($details['approve'] == '0'){?>
+                            <p class="text-danger">Declined</p>
+                            <?php
+                        }
+                    }
+                    ?>
+                    <p><button class="btn btn-sm btn-danger delete-task" value="<?php echo $details['report_id']?>">Delete Task</button></p>
                 </div>
             </div>
             <?php }
@@ -511,6 +543,7 @@ function fetch_admins(){
         <th>Admin Name</th>
         <th>Admin Email</th>
         <th>Department</th>
+        <th>Level</th>
         <th>Actions</th>
     </tr>
 
@@ -524,6 +557,14 @@ function fetch_admins(){
             <td><?php echo $details['username']?></td>
             <td><?php echo $details['email']?></td>
             <td><?php echo $details2['department_name']?></td>
+            <td><?php
+            if($details['level'] == '1'){
+                echo 'Super Admin';
+            } 
+            else if($details['level'] == '2'){
+                echo 'Standard Admin';
+            }
+            ?></td>
             <td><button class="btn btn-sm btn-danger" value="<?php echo $details['id']?>">Delete</button></td>
         </tr>
 <?php }

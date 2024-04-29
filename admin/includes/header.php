@@ -59,8 +59,13 @@
             <a href="branches.php"><i class="fa-solid fa-building"></i> Organizations</a>
             <a href="department.php"><i class="fas fa-table"></i> Departments</a>
             <a href="reports.php"><i class="fa-regular fa-file"></i> Reports</a>
-            <a href="admins.php"><i class="fa-solid fa-user-lock"></i> Admins</a>
-            <a href="captures.php"><i class="fa-solid fa-camera"></i> Live Captures</a>
+            <?php
+            if(isset($_SESSION['admin_type']) && $_SESSION['admin_type'] == '1'){?>
+                <a href="admins.php"><i class="fa-solid fa-user-lock"></i> Admins</a>
+            <?php
+            }
+            ?>
+            <a href="captures.php"><i class="fa-solid fa-camera"></i> Meetings</a>
             <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
         </div>
     </div>

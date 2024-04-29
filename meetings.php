@@ -83,6 +83,11 @@
             margin-bottom: 10px;
         }
 
+        .disabled{
+            pointer-events: none;
+            cursor: none;
+        }
+
         @media only screen and (max-width: 900px){
             .navbar a{
                 font-size: 25px;
@@ -114,110 +119,73 @@
 <body>
     <?php include 'admin/functions/functions.php' ?>
     <div id="outer" class="px-3">
-        <h4>Generate Reports</h4>
-        <div id="initials" class="col-md-5">
-            <div class="form-group">
-                <label for="from">From</label>
-                <input type="date" id="from" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="to">To</label>
-                <input type="date" id="to" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="">&nbsp;</label>
-                <button class="btn btn-sm btn-success form-control" id="generate">Generate</button>
-            </div>
-        </div>
-        <button class="btn btn-sm btn-danger" id="pdf" onclick="toPdf()">Export PDF</button>
+        <h4>Meetings</h4>
         <table id="unapproved" class="w-100 display nowrap mx-3">
             <thead>
                 <tr>
+                    <th>From</th>
                     <th>Date</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    <th>Place of Work</th>
-                    <th>Remarks</th>
+                    <th>Time</th>
+                    <th>Note</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+                <?php
+                $id = $_SESSION['id'];
+                $sql1 = "SELECT * FROM employee WHERE employee_id = $id";
+                $run1 = mysqli_query($connection, $sql1);
+                $fetch_employee = mysqli_fetch_assoc($run1);
+                $dept = $fetch_employee['department'];
+
+                $sql = "SELECT * FROM meetings WHERE department = $dept";
+                $run = mysqli_query($connection, $sql);
+                $rows = mysqli_num_rows($run);
+                date_default_timezone_set('Africa/Nairobi');
+                
+                $currentDate = date('Y-m-d');
+                if($rows > 0){
+                    while($fetch = mysqli_fetch_assoc($run)){
+                        $admin_id = $fetch['user_id'];
+                        $sql2 = "SELECT * FROM admin WHERE id = $admin_id";
+                        $run2 = mysqli_query($connection, $sql2);
+                        $fetch_admin = mysqli_fetch_assoc($run2);
+                        $fetchTime = trim($fetch['time']);
+                        $fetchTime = date('H:i:s', strtotime($fetchTime));
+                        $currentDateTime = new DateTime();
+                        $currentTime = $currentDateTime->format('H:i:s');
+                ?>
+                        <tr>
+                        <td><?php echo $fetch_admin['username']?></td>
+                        <td><?php echo $fetch['date']?></td>
+                        <td><?php echo $fetch['time']?></td>
+                        <td><?php echo $fetch['note']?></td>
+                        <td><?php
+                        if(date('Y-m-d', strtotime($fetch['date'])) == $currentDate && $currentTime >= $fetchTime ){?>
+                            <a href="<?php echo $fetch['link']?>" target="_blank" class="btn btn-sm btn-info">Join</a>
+                        <?php
+                        }
+                        else if(date('Y-m-d', strtotime($fetch['date'])) > $currentDate || date('Y-m-d', strtotime($fetch['date'])) == $currentDate && $currentTime < $fetchTime){?>
+                            <a href="<?php echo $fetch['link']?>" target="_blank" class="btn btn-sm btn-warning disabled">Upcoming</a>
+                            <?php
+                        }
+                        else if(date('Y-m-d', strtotime($fetch['date'])) < $currentDate){?>
+                            <a href="<?php echo $fetch['link']?>" target="_blank" class="btn btn-sm btn-secondary disabled">Not Available</a>
+                        <?php
+                        }
+                        ?></td>
+                        </tr>
+                    <?php
+                    }
+                }?>
+            </tbody>
         </table>
     </div>
     <script src="admin/libraries/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/autofill/2.6.0/js/dataTables.autoFill.min.js"></script>
     <script>
-        //adding editing features to remarks
-        tinymce.init({
-                selector: '.remarks'
-            });
-
-            $('#generate').on('click', function(){
-                if($('#from, #to') != ''){
-                    var from = $('#from').val();
-                    var to = $('#to').val();
-                    $.ajax({
-                        type: "post",
-                        url: "server/reports.php",
-                        data: {from: from, to: to},
-                        dataType: "html",
-                        success: function (response) {
-                            $('#unapproved tbody').html(response);
-                        }
-                    });
-                }
-                else{
-                    alert('"From" and "To" dates are required!');
-                }
-            })
-
-            function toPdf() {
-                var doc = new jsPDF();
-
-                var currentDate = new Date();
-                var formattedDate = currentDate.getFullYear() + '-' + addLeadingZero((currentDate.getMonth() + 1)) + '-' + addLeadingZero(currentDate.getDate());
-
-                // Function to add leading zero to single-digit numbers
-                function addLeadingZero(number) {
-                    return (number < 10 ? '0' : '') + number;
-                }
-                // Add header
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "bold");
-                doc.text('Tasks Report', 14, 6);
-                doc.text($("#from").val() + " to " + $("#to").val(), 14, 18);
-
-                // Add footer
-                var pageCount = doc.internal.getNumberOfPages();
-                for (var i = 1; i <= pageCount; i++) {
-                    doc.setPage(i);
-                    doc.setFont("helvetica", "normal");
-                    doc.text("Page " + i + " of " + pageCount, 20, doc.internal.pageSize.height - 10);
-                    doc.setFontSize(10);
-                    doc.setFont("helvetica", "italic");
-                    doc.text('© UOEM', 50, doc.internal.pageSize.height - 10);
-                    doc.text('Exported on: '+currentDate, 80, doc.internal.pageSize.height - 10);
-                }
-
-
-                // Export table to PDF
-                doc.autoTable({
-                    html: '#unapproved',
-                    theme: 'grid',
-                    margin: { top: 20 },
-                    headStyles: { fillColor: [0, 51, 102], textColor: 255, fontSize: 12 },
-                    bodyStyles: { textColor: 0, fontSize: 10 },
-                    didDrawPage: function (data) {
-                        // Add additional styling or content on each page if needed
-                    }
-                });
-
-                doc.save("Report_for_"+ $("#from").val() + "_to_" + $("#to").val());
-            }
-
-            //toggling menu in small screens
+        //toggling menu in small screens
         $('#mini-menu').on('click', function () {
             if ($('#options').hasClass('toggleMenu')) {
                 $('#options').removeClass('toggleMenu');

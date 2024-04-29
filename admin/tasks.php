@@ -7,6 +7,17 @@
         #name button > .fa-minus{
             display: none;
         }
+        #row{
+            position: relative;
+        }
+        .indicator{
+            position: absolute;
+            right: 0px;
+            width: 50px !important;
+            top: 0px;
+            padding: 2px;
+            font-size: 12px
+        }
     </style>
     <div id="content">
         <h4>Tasks Done</h4>
@@ -61,6 +72,63 @@
                     success: function (response) {
                         if(response){
                             $('#tasks #contains').html(response);
+                        }
+                    }
+                });
+            })
+
+            //deleting tasks
+            $('.delete-task').on('click', function(){
+                var task_id = $(this).val();
+                $.ajax({
+                    type: "post",
+                    url: "server/delete_task.php",
+                    data: {task_id: task_id},
+                    dataType: "text",
+                    success: function (response) {
+                        if(response == '1'){
+                            location.reload();
+                        }
+                        else if(response == '2'){
+                            alert('Something went wrong!');
+                        }
+                    }
+                });
+            })
+
+            //approving a task
+            $('.approve-task').on('click', function(){
+            var task_id = $(this).val();
+                $.ajax({
+                    type: "post",
+                    url: "server/approve_task.php",
+                    data: {task_id: task_id},
+                    dataType: "text",
+                    success: function (response) {
+                        if(response == '1'){
+                            location.reload();
+                        }
+                        else if(response == '0'){
+                            alert('Something went wrong!');
+                        }
+                    }
+                });
+            })
+
+            //declining a task
+            $('.decline-task').on('click', function(){
+                var task_id = $(this).val();
+                $.ajax({
+                    type: "post",
+                    url: "server/decline_task.php",
+                    data: {task_id: task_id},
+                    dataType: "text",
+                    success: function (response) {
+                        if(response == '1'){
+                            location.reload();
+                        }
+                        else if(response == '0'){
+                            alert('Something went wrong!');
                         }
                     }
                 });
